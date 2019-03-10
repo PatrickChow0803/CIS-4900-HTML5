@@ -1,0 +1,266 @@
+/*  Patrick Chow
+    Database Assignment Number 6
+    November 9, 2017
+*/
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <vector>
+using namespace std;
+int findphone (char productID[], char id, int arraySize);
+void menu (char[],double [],vector <int>&,int);
+int addPhone(char productID[], double price[], vector <int>&, int &currentElement);
+int updatePhone (char productID[], double price[], vector <int>&, int currentElement);
+void displayPhone (char *productID, double *price, vector <int>&, int currentElement);
+void printDatabase(char *productID, double *price, vector <int>&, int arraySize);
+int deletePhone(char productID[], double price[], vector <int>&, int arraySize);
+int phoneFilter(char productID[], double price[], vector <int>&, int arraySize);
+
+int main (){
+
+    const int arraySize = 1000, twoD=5;
+    int currentElement;
+
+    char **prdtDynamic = new char*[arraySize]{0};
+    for (int x = 0; x < arraySize; x++){
+        prdtDynamic[x] = new char[5];
+    }
+
+    char productID[arraySize];
+    double price[arraySize];
+    vector <int> quantity(arraySize);
+    string stringProductID[arraySize];
+
+    productID[0] = 'A';  // This is used be testing
+
+
+
+    for (int x =0; x <arraySize; x++){
+        stringProductID[x] = productID[x];
+    }
+
+
+    menu(productID,price ,quantity,arraySize);
+
+    for ( int x =0; x < arraySize; x ++){
+        delete[] prdtDynamic[x];
+    }
+    delete [] prdtDynamic;
+
+}
+
+// Finds the phone in the database.
+    int findPhone (char productID[], char id, int arraySize){
+    int currentElement;
+    for (int y = 0; y < arraySize; y++){
+        if (productID[y] == id)
+            return currentElement = y;
+    }
+    return -1;
+}
+
+// Prints the menu and prompts which function to use
+void menu (char productID[], double price[], vector <int> &quantity, int arraySize){
+    int selection;
+    cout << "\n\t Welcome to the SmartPhone Database. The choices are \n\n";
+
+    while (selection < 1 || selection > 7){
+        cout << "1. Add Item\n"
+             << "2. Update Item\n"
+             << "3. Display Item\n"
+             << "4. Print Database\n"
+             << "5. Delete Item\n"
+             << "6. Phone Filter\n"
+             << "7. Exit Program \n\n"
+             << "Please enter your choice. ";
+
+        cin >> selection;
+        const int addFunction = 1,
+                  updateFunction = 2,
+                  displayFunction = 3,
+                  printFunction = 4,
+                  deleteFunction = 5,
+                  filterFunction = 6,
+                  exitProgram = 7;
+
+         if (selection == addFunction){
+            addPhone(productID, price, quantity, arraySize);
+         }
+
+         else if (selection == updateFunction) {
+            updatePhone(productID, price, quantity, arraySize);
+         }
+
+         else if (selection == displayFunction){
+            displayPhone(productID, price, quantity, arraySize);
+         }
+         else if (selection == printFunction){
+            printDatabase(productID, price, quantity, arraySize);
+         }
+
+         else if (selection == deleteFunction) {
+            deletePhone(productID, price, quantity, arraySize);
+         }
+
+         else if (selection == filterFunction){
+            phoneFilter(productID, price, quantity, arraySize);
+         }
+
+         else if (selection == exitProgram){
+            cout << "Now exiting program..";
+         }
+         else
+             cout << endl << selection << " is an invalid choice, please try again.\n\n";
+
+    }
+}
+
+// Adds a new phone to the database.
+int addPhone(char productID[], double price[], vector <int>&quantity, int &currentElement){
+    char id;
+    double expense;
+    int amount;
+    cout << "Enter the phones id";
+    cin >> id;
+
+    while(findPhone(productID, id, currentElement) != -1){
+        cout << "That product ID is already in use, please try again.";
+        cin >> id;
+    }
+    cout << "Enter the phones price.";
+    cin >> price[currentElement];
+    cout << "Now enter the quantity.";
+    cin >> quantity[currentElement];
+    cout << "Phone ID has been successfully added.";
+    currentElement++;
+}
+
+//Updates the price and quantity of an existing phone.
+int updatePhone (char productID[], double price[], vector <int>&quantity, int currentElement){
+
+    cout << "Enter the phones ID.";
+    char id;
+    cin >> id;
+    while(findPhone(productID, id, currentElement) == -1){
+        cout << "That product isn't part of the database.\n"
+             << "Please try again.";
+         cin >> id;
+    }
+    cout << "Enter the new price.";
+    cin >> price[findPhone(productID, id, currentElement)];
+    cout << "Now enter the new quantity.";
+    cin >> quantity[findPhone(productID, id, currentElement)];
+    cout << "Updated successfully.";
+
+}
+
+//Displays ID, price, and quantity of a phone.
+void displayPhone (char *productID, double *price, vector <int>&quantity, int currentElement){
+
+    cout << "Enter the phones ID.";
+    char id;
+    cin >> id;
+
+    while (findPhone(productID, id, currentElement) == -1){
+        cout << "That product isn't part of the database.\n"
+             << "Please try again.";
+         cin >> id;
+    }
+    int location = findPhone(productID, id, currentElement);
+    cout << "The ID is " << *(productID + location) << endl;
+    cout << "The price is " << *(price + location) << endl;
+    cout << "The quantity is " << quantity[location];
+}
+
+//Prints the Database.
+void printDatabase(char *productID, double *price, vector <int> &quantity, int arraySize){
+
+    cout << "Now printing all phones in the database.." << endl;
+    for (int x = 0; x < arraySize; x ++){
+        cout << "ID: " << *(productID + x) << " Price: " << *(price + x) << " Quantity: " << quantity[x]<< endl;
+    }
+}
+
+//Deletes a phone from Database only if quantity if 0.
+int deletePhone(char productID[], double price[], vector <int>&quantity, int arraySize){
+
+    cout << "\nThis program will delete a phone from the database only if\n"
+         << "the quantity of the phone is zero.\n\n"
+         << "Enter the phones ID. ";
+    char id;
+    cin >> id;
+
+    int location = findPhone(productID, id, arraySize);
+
+    while (findPhone(productID, id, arraySize) == -1){
+        cout << "That product isn't part of the database.\n"
+             << "Please try again.";
+         cin >> id;
+    }
+
+    for (int x = location -1; x < arraySize; x++){
+        productID[x] = productID[x+1];
+        price[x] = price[x+1];
+        quantity[x] = quantity[x+1];
+    }
+
+    price[arraySize-1] = 0;
+    quantity[arraySize-1] = 0;
+    cout << "Phone has been successfully deleted.";
+    }
+
+
+//Search phones by criteria
+int phoneFilter(char productID[], double price[], vector <int>&, int arraySize){
+
+    cout << "Would you like to either search phones by their name or by their price?\n"
+         << "1. Search by Name \n"
+         << "2. Search by Price \n\n";
+    const int name = 1;
+
+    char id;
+    int selection;
+    cin >> selection;
+    while (selection <1 || selection >2){
+        cout << "Invalid choice. Please try again.";
+        cin >> selection;
+    }
+    if (selection == name){
+        cout << "Enter the ID.";
+        cin >> id;
+        findPhone(productID, id, arraySize);
+    }
+    else {
+        double price1=0, price2 = 1000;
+        cout << "The current price range is $0 ~ 1000\n\n"
+             << "Enter the price range that you wish to look up starting from the lowest value.";
+        cin >> price1;
+        while(price1 < 0){
+            cout << "\nCannot enter a negative number.\n"
+                 << "Try again.\n";
+            cin >> price1;
+        }
+        cout << "Now enter the highest value.";
+        cin >> price2;
+        while (price2 < price1){
+            cout << "\nThe highest value cannot be less than the lowest value.\n"
+                 << "Try again.\n";
+            cin >> price2;
+        }
+        for (int x=0; x < arraySize; x++){
+            if (price[x] >= price1 && price[x] <= price2){
+                cout << "Product ID is " << productID[x] << ". Price is " << price[x];
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
